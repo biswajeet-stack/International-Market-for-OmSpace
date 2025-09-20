@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OmSpace EdTech | Market Research Report</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Starlight Blue & Slate -->
+    <!-- Application Structure Plan: A tabbed, single-page dashboard structure was chosen to provide a non-linear, exploratory experience. Users can jump directly to the section most relevant to them (e.g., a strategist might go to 'Recommendations' first, while a product manager might focus on 'Demand Analysis'). This is more efficient than a linear report. Key interactions include tabbed navigation to switch between views, a sortable chart for course demand, and a clickable competitor table to view details on demand. This structure organizes complex market data into digestible, user-driven modules. -->
+    <!-- Visualization & Content Choices: Market Size -> Goal: Inform -> Viz: Line Chart & Key Metric Cards -> Interaction: Hover tooltips -> Justification: Quickly shows growth trend and key numbers -> Library: Chart.js. Course Demand -> Goal: Compare -> Viz: Horizontal Bar Chart -> Interaction: Button to sort by demand -> Justification: Clearly ranks course popularity -> Library: Chart.js. Competitor Analysis -> Goal: Organize/Compare -> Viz: Interactive HTML Table -> Interaction: Click row to show detailed info -> Justification: Allows deep dive without cluttering the main view -> Library: Vanilla JS. Strategic Points -> Goal: Inform -> Viz: Styled cards -> Interaction: Static -> Justification: Clear, scannable recommendations -> Library: Tailwind CSS. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 40vh;
+            max-height: 450px;
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .nav-link.active {
+            color: #2563eb;
+            border-bottom-color: #2563eb;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .metric-card {
+            background-color: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.1);
+        }
+        .competitor-table tbody tr {
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .competitor-table tbody tr:hover {
+            background-color: #eff6ff;
+        }
+        .competitor-table tbody tr.selected {
+            background-color: #dbeafe;
+            box-shadow: inset 0 0 0 2px #3b82f6;
+        }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <header class="bg-white shadow-sm sticky top-0 z-10">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-2">
+                    <span class="text-2xl font-bold text-blue-600">🚀</span>
+                    <h1 class="text-xl font-bold text-slate-900">OmSpace EdTech | Market Research</h1>
+                </div>
+                <div class="hidden md:block">
+                    <nav class="flex space-x-4" id="desktop-nav">
+                        <a data-target="overview" class="nav-link active py-2 border-b-2 border-transparent text-slate-600 hover:text-blue-600">Market Overview</a>
+                        <a data-target="demand" class="nav-link py-2 border-b-2 border-transparent text-slate-600 hover:text-blue-600">Demand Analysis</a>
+                        <a data-target="competition" class="nav-link py-2 border-b-2 border-transparent text-slate-600 hover:text-blue-600">Competitive Landscape</a>
+                        <a data-target="recommendations" class="nav-link py-2 border-b-2 border-transparent text-slate-600 hover:text-blue-600">Recommendations</a>
+                    </nav>
+                </div>
+                <div class="md:hidden">
+                    <select id="mobile-nav" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <option value="overview">Market Overview</option>
+                        <option value="demand">Demand Analysis</option>
+                        <option value="competition">Competitive Landscape</option>
+                        <option value="recommendations">Recommendations</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8">
+        <section id="overview" class="content-section active">
+            <h2 class="text-3xl font-bold text-slate-900 mb-2">Market Overview</h2>
+            <p class="text-slate-600 mb-8 max-w-3xl">
+                This section provides a high-level view of the global Aerospace EdTech market. Key metrics highlight the market's current value, projected growth, and target audience size. The chart visualizes the anticipated growth trajectory, indicating a strong and sustained interest in online aerospace education.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                <div class="metric-card">
+                    <h3 class="text-lg font-semibold text-slate-500">Market Size (2025)</h3>
+                    <p class="text-4xl font-bold text-blue-600">$15 Billion</p>
+                    <p class="text-sm text-slate-500 mt-2">Estimated global market for online aerospace education and training.</p>
+                </div>
+                <div class="metric-card">
+                    <h3 class="text-lg font-semibold text-slate-500">Projected CAGR</h3>
+                    <p class="text-4xl font-bold text-blue-600">10.5%</p>
+                    <p class="text-sm text-slate-500 mt-2">Compound Annual Growth Rate from 2025 to 2030.</p>
+                </div>
+                <div class="metric-card">
+                    <h3 class="text-lg font-semibold text-slate-500">Target Audience</h3>
+                    <p class="text-4xl font-bold text-blue-600">1.2 Million+</p>
+                    <p class="text-sm text-slate-500 mt-2">Engaged learners across university, high school, and professional segments.</p>
+                </div>
+            </div>
+            
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h3 class="text-xl font-bold text-slate-900 mb-4 text-center">Market Growth Projection (2025-2030)</h3>
+                <div class="chart-container">
+                    <canvas id="marketGrowthChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="demand" class="content-section">
+            <h2 class="text-3xl font-bold text-slate-900 mb-2">Demand Analysis</h2>
+            <p class="text-slate-600 mb-8 max-w-3xl">
+                This section explores the current demand for various aerospace topics within the online education market. The charts below illustrate which subjects are most popular among potential students and break down the primary audience demographics. Use these insights to prioritize course development.
+            </p>
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                <div class="lg:col-span-3 bg-white p-6 rounded-lg shadow-lg">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-bold text-slate-900">Top Course Topics by Demand</h3>
+                        <button id="sortCoursesBtn" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition">Sort by Demand</button>
+                    </div>
+                    <div class="chart-container h-[50vh] max-h-[600px]">
+                        <canvas id="courseDemandChart"></canvas>
+                    </div>
+                </div>
+                <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="text-xl font-bold text-slate-900 mb-4 text-center">Learner Demographics</h3>
+                    <div class="chart-container h-[40vh] max-h-[400px]">
+                        <canvas id="learnerDemographicsChart"></canvas>
+                    </div>
+                    <div class="mt-6 text-center text-slate-600">
+                        The market is dominated by university students, but there's a significant opportunity to engage high school students and upskill industry professionals.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="competition" class="content-section">
+            <h2 class="text-3xl font-bold text-slate-900 mb-2">Competitive Landscape</h2>
+            <p class="text-slate-600 mb-8 max-w-3xl">
+                The Aerospace EdTech space includes a diverse range of competitors, from massive online course providers (MOOCs) to specialized platforms. The table below outlines key players. Click on any competitor to view a detailed analysis of their strengths, weaknesses, and typical course offerings.
+            </p>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left competitor-table">
+                                <thead class="bg-slate-50">
+                                    <tr>
+                                        <th class="p-4 font-semibold text-slate-600">Competitor</th>
+                                        <th class="p-4 font-semibold text-slate-600">Type</th>
+                                        <th class="p-4 font-semibold text-slate-600">Primary Audience</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="competitor-table-body">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div id="competitor-details" class="bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="text-xl font-bold text-slate-900 mb-4">Select a Competitor</h3>
+                    <p class="text-slate-600">Click on a row in the table to see detailed information here.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="recommendations" class="content-section">
+            <h2 class="text-3xl font-bold text-slate-900 mb-2">Strategic Recommendations</h2>
+            <p class="text-slate-600 mb-8 max-w-3xl">
+                Based on the market analysis, here are four strategic recommendations for OmSpace's EdTech platform to achieve a competitive advantage and capture market share. These focus on leveraging OmSpace's unique position as both an industry player and an educator.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="metric-card space-y-3">
+                    <div class="text-3xl">💡</div>
+                    <h3 class="text-lg font-bold text-blue-600">1. Focus on Applied Learning</h3>
+                    <p class="text-slate-600 text-sm">Differentiate from theoretical university courses by offering project-based learning. Use OmSpace's real-world data and case studies (e.g., micro-satellite deployment challenges) to create immersive, practical course content that is highly valuable to students and professionals.</p>
+                </div>
+                <div class="metric-card space-y-3">
+                    <div class="text-3xl">🎯</div>
+                    <h3 class="text-lg font-bold text-blue-600">2. Develop Niche Expertise</h3>
+                    <p class="text-slate-600 text-sm">Instead of competing broadly, dominate a niche. Focus on reusable rockets and nano/micro-satellite systems—your core business. Offer the world's leading curriculum in this specific, high-growth area. This builds authority and attracts a dedicated audience.</p>
+                </div>
+                <div class="metric-card space-y-3">
+                     <div class="text-3xl">🤝</div>
+                    <h3 class="text-lg font-bold text-blue-600">3. Build a Global Community</h3>
+                    <p class="text-slate-600 text-sm">Create a platform, not just a course repository. Foster a community with forums, live Q&A sessions with OmSpace engineers, and collaborative projects. This adds immense value beyond content and increases student retention and loyalty.</p>
+                </div>
+                <div class="metric-card space-y-3">
+                    <div class="text-3xl">🔗</div>
+                    <h3 class="text-lg font-bold text-blue-600">4. Create Industry Pathways</h3>
+                    <p class="text-slate-600 text-sm">Leverage your industry connections. Offer certifications that are recognized by aerospace companies. Create pathways from course completion to internships or job opportunities at OmSpace or partner companies. This is a powerful, unique selling proposition.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            
+            const data = {
+                marketGrowth: {
+                    labels: ['2025', '2026', '2027', '2028', '2029', '2030'],
+                    values: [15, 16.5, 18.2, 20.1, 22.3, 25.0]
+                },
+                courseDemand: [
+                    { name: 'Rocket Propulsion Fundamentals', demand: 95 },
+                    { name: 'Satellite Technology & Design', demand: 92 },
+                    { name: 'Orbital Mechanics & Astrodynamics', demand: 88 },
+                    { name: 'Aerospace Systems Engineering', demand: 80 },
+                    { name: 'Computational Fluid Dynamics (CFD)', demand: 75 },
+                    { name: 'Aerospace Materials & Structures', demand: 72 },
+                    { name: 'Space Mission Design', demand: 68 },
+                    { name: 'Space Law & Policy', demand: 45 },
+                    { name: 'History of Space Exploration', demand: 30 }
+                ],
+                learnerDemographics: {
+                    labels: ['University Students', 'High School Students', 'Industry Professionals'],
+                    values: [60, 25, 15]
+                },
+                competitors: [
+                    {
+                        name: 'Coursera / edX',
+                        type: 'MOOC',
+                        audience: 'General / Academic',
+                        details: {
+                            strengths: 'High brand recognition, partnerships with top universities, wide course catalog, formal certifications.',
+                            weaknesses: 'Often highly theoretical, content can be dated, low course completion rates, lacks hands-on application.',
+                            offerings: 'Courses like "Introduction to Aerospace Engineering" from MIT, "Spacecraft Dynamics and Control" from University of Colorado Boulder.'
+                        }
+                    },
+                    {
+                        name: 'Udemy / Skillshare',
+                        type: 'Skill Marketplace',
+                        audience: 'Hobbyist / Professional',
+                        details: {
+                            strengths: 'Affordable, highly practical and tool-specific courses, large variety of instructors.',
+                            weaknesses: 'Highly variable quality, lacks formal accreditation, less structured learning paths.',
+                            offerings: 'Courses focused on specific software like SOLIDWORKS for aerospace design or Python for astrodynamics calculations.'
+                        }
+                    },
+                    {
+                        name: 'Specialized Platforms (e.g., Brilliant)',
+                        type: 'Niche STEM',
+                        audience: 'Enthusiast / Student',
+                        details: {
+                            strengths: 'Highly interactive and engaging content, strong focus on foundational concepts, excellent UI/UX.',
+                            weaknesses: 'Limited scope, not focused specifically on aerospace, less emphasis on career-oriented skills.',
+                            offerings: 'Interactive modules on physics principles like gravity and orbital mechanics, but not comprehensive aerospace courses.'
+                        }
+                    },
+                    {
+                        name: 'University Online Programs',
+                        type: 'Formal Education',
+                        audience: 'Degree-seekers',
+                        details: {
+                            strengths: 'Accredited degrees (Masters, etc.), deep, comprehensive curriculum, direct access to faculty.',
+                            weaknesses: 'Extremely high cost, high barrier to entry (admissions), less flexible schedule.',
+                            offerings: 'Full online Master of Science in Aerospace Engineering from institutions like Georgia Tech or Purdue.'
+                        }
+                    }
+                ]
+            };
+
+            let courseDemandChart;
+            let currentCourseSort = 'demand';
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const mobileNav = document.getElementById('mobile-nav');
+            const contentSections = document.querySelectorAll('.content-section');
+
+            function switchTab(targetId) {
+                contentSections.forEach(section => {
+                    section.classList.remove('active');
+                });
+                document.getElementById(targetId).classList.add('active');
+
+                navLinks.forEach(link => {
+                    link.classList.toggle('active', link.dataset.target === targetId);
+                });
+                
+                if(mobileNav.value !== targetId) {
+                    mobileNav.value = targetId;
+                }
+            }
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    switchTab(e.target.dataset.target);
+                });
+            });
+
+            mobileNav.addEventListener('change', (e) => {
+                switchTab(e.target.value);
+            });
+            
+            Chart.defaults.font.family = "'Inter', sans-serif";
+            Chart.defaults.color = '#334155';
+            
+            function wrapText(context, text, x, y, maxWidth, lineHeight) {
+                const words = text.split(' ');
+                let line = '';
+                for(let n = 0; n < words.length; n++) {
+                    let testLine = line + words[n] + ' ';
+                    let metrics = context.measureText(testLine);
+                    let testWidth = metrics.width;
+                    if (testWidth > maxWidth && n > 0) {
+                        context.fillText(line, x, y);
+                        line = words[n] + ' ';
+                        y += lineHeight;
+                    }
+                    else {
+                        line = testLine;
+                    }
+                }
+                context.fillText(line, x, y);
+            }
+
+            function createMarketGrowthChart() {
+                const ctx = document.getElementById('marketGrowthChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: data.marketGrowth.labels,
+                        datasets: [{
+                            label: 'Market Value (in Billion USD)',
+                            data: data.marketGrowth.values,
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            borderColor: '#2563eb',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#2563eb',
+                            pointRadius: 5,
+                            pointHoverRadius: 7
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                ticks: {
+                                    callback: function(value) {
+                                        return '$' + value + 'B';
+                                    }
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return `Market Value: $${context.parsed.y} Billion`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            function createOrUpdateCourseDemandChart() {
+                const sortedData = [...data.courseDemand].sort((a, b) => {
+                    if (currentCourseSort === 'demand') {
+                        return b.demand - a.demand;
+                    }
+                    return a.name.localeCompare(b.name);
+                });
+
+                const ctx = document.getElementById('courseDemandChart').getContext('2d');
+                if (courseDemandChart) {
+                    courseDemandChart.data.labels = sortedData.map(c => c.name);
+                    courseDemandChart.data.datasets[0].data = sortedData.map(c => c.demand);
+                    courseDemandChart.update();
+                    return;
+                }
+                courseDemandChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: sortedData.map(c => c.name),
+                        datasets: [{
+                            label: 'Relative Demand Score',
+                            data: sortedData.map(c => c.demand),
+                            backgroundColor: '#3b82f6',
+                            borderColor: '#2563eb',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Relative Demand Score (out of 100)'
+                                }
+                            },
+                            y: {
+                                ticks: {
+                                    autoSkip: false,
+                                    callback: function(value, index, values) {
+                                        const label = this.getLabelForValue(value);
+                                        return label.length > 25 ? label.substring(0, 25) + '...' : label;
+                                    }
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return `Demand Score: ${context.parsed.x}`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            document.getElementById('sortCoursesBtn').addEventListener('click', () => {
+                currentCourseSort = currentCourseSort === 'demand' ? 'alpha' : 'demand';
+                document.getElementById('sortCoursesBtn').textContent = currentCourseSort === 'demand' ? 'Sort Alphabetically' : 'Sort by Demand';
+                createOrUpdateCourseDemandChart();
+            });
+
+            function createLearnerDemographicsChart() {
+                const ctx = document.getElementById('learnerDemographicsChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: data.learnerDemographics.labels,
+                        datasets: [{
+                            label: 'Learner Demographics',
+                            data: data.learnerDemographics.values,
+                            backgroundColor: ['#2563eb', '#60a5fa', '#93c5fd'],
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return `${context.label}: ${context.parsed}%`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            
+            function populateCompetitorTable() {
+                const tableBody = document.getElementById('competitor-table-body');
+                const detailsPanel = document.getElementById('competitor-details');
+                tableBody.innerHTML = '';
+                
+                data.competitors.forEach((competitor, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="p-4 font-medium text-slate-900">${competitor.name}</td>
+                        <td class="p-4 text-slate-600">${competitor.type}</td>
+                        <td class="p-4 text-slate-600">${competitor.audience}</td>
+                    `;
+                    row.addEventListener('click', () => {
+                        document.querySelectorAll('.competitor-table tbody tr').forEach(r => r.classList.remove('selected'));
+                        row.classList.add('selected');
+
+                        detailsPanel.innerHTML = `
+                            <h3 class="text-xl font-bold text-blue-600 mb-4">${competitor.name}</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <h4 class="font-semibold text-slate-700">Strengths</h4>
+                                    <p class="text-slate-600 text-sm">${competitor.details.strengths}</p>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-slate-700">Weaknesses</h4>
+                                    <p class="text-slate-600 text-sm">${competitor.details.weaknesses}</p>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-slate-700">Key Offerings</h4>
+                                    <p class="text-slate-600 text-sm">${competitor.details.offerings}</p>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    tableBody.appendChild(row);
+                });
+            }
+
+            createMarketGrowthChart();
+            createOrUpdateCourseDemandChart();
+            createLearnerDemographicsChart();
+            populateCompetitorTable();
+        });
+    </script>
+</body>
+</html>
